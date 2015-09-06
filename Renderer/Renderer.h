@@ -4,8 +4,8 @@
 */
 #ifndef __RENDERER_H__
 #define __RENDERER_H__
-#define SCREEN_HEIGHT   (1080u)
-#define SCREEN_WIDTH    (1920u)
+#define SCREEN_HEIGHT   (740u)
+#define SCREEN_WIDTH    (1024u)
 
 /**
     Enum descriptors of errors for the Renderer Module
@@ -18,6 +18,7 @@ typedef enum
 }Renderer_Error;
 
 typedef unsigned Renderer_resource_t;
+#define Renderer_resource_ERR (0u - 1)
 /**
     Initializes the SDL renderer for the program.
 

@@ -1,0 +1,8 @@
+*.o
+CMakeCache.txt
+*/CMakeCache.txt
+CMakeFiles
+Makefile
+*.cmake
+*.a
+ZombiesVsHumans
