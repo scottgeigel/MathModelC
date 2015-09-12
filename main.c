@@ -5,13 +5,19 @@ void main()
 {
     const int screenHeight  = 600;
     const int screenWidth   = 800;
+    bool singleStep = true;
     Model_Map map;
     Renderer_Init(screenWidth, screenHeight);
+    Renderer_AddResource("res/conwayCell.bmp", "Conway Cell");
+    
     Model_Map_Init(&map, 30, 25);
 
     StartScene(&map, screenWidth, screenHeight);
+    ConwaysGameOfLife_Init(&map);
     while(!InputHandler_ExitRequested())
     {
+        if(!singleStep || InputHandler_NextStepRequested())
+            ConwaysGameOfLife_Next();
         DrawMap();
     }
     //World_delete(world);

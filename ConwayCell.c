@@ -1,6 +1,10 @@
 #include "ConwayCell.h"
 #include <stdio.h>
 
+#define MAX_CELLS 20
+static ConwayCell debug[MAX_CELLS];
+static Model_Map* debug2;
+
 static void Agenda(Model_Agent* this, const Model_Map* map)
 {
     ConwayCell *cell = (ConwayCell*)this;
@@ -31,7 +35,7 @@ static void Agenda(Model_Agent* this, const Model_Map* map)
     if(Model_Map_HasAgent(map, x + 1, y - 1))
         cellCount++;
 
-
+    printf("%s at %d,%d ", this->class, this->x, this->y);
     //Any live cell with fewer than two live neighbours dies, as if caused by under-population.
     //Any live cell with more than three live neighbours dies, as if by overcrowding.
     if ((cellCount < 2) || (cellCount > 3))
@@ -47,6 +51,29 @@ static void Agenda(Model_Agent* this, const Model_Map* map)
 static void MessageHandler(Model_Agent* this, const char* message)
 {
 
+}
+
+
+void ConwaysGameOfLife_Init(Model_Map* map)
+{
+    int i;
+    debug2 = map;
+    for (i = 0; i < MAX_CELLS; ++i)
+    {
+        ConwayCell_Init(&debug[i]);
+        debug[i].super.x = 2 + i;
+        debug[i].super.y = 1 + (i/2);
+        map->tiles[debug[i].super.x][debug[i].super.y].agent = &debug[i].super;
+    }
+}
+
+void ConwaysGameOfLife_Next(void)
+{
+    int i;
+    for (i = 0; i < MAX_CELLS; ++i)
+    {
+        debug[i].super.agenda((Model_Agent*) &debug[i], debug2);
+    }
 }
 
 void ConwayCell_Init(ConwayCell* this)

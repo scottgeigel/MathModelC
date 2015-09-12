@@ -11,6 +11,7 @@
 typedef enum
 {
     EXIT_REQUESTED = 0,
+    NEXTSTEP_REQUESTED,
     NUM_EVENTS,
 }InputHandler_Events;
 
@@ -21,6 +22,8 @@ typedef enum
     @retval false - Termination not requested
 */
 bool InputHandler_ExitRequested();
+
+bool InputHandler_NextStepRequested();
 /**
 @}
 */

@@ -116,3 +116,8 @@ void Renderer_DrawResource(Atlas_index_t idx, int x, int y, int scaleFactorX, in
         snprintf(lastError, sizeof(lastError), "Could not find %s. Pleas use AddResource(name, path) first.", SDL_GetError());
     }
 }
+
+Atlas* Renderer_GetAtlas()
+{
+    return &atlas;
+}

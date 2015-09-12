@@ -1,0 +1,10 @@
+abstract out renderer/atlas so that consumers don't need to know about sdl
+	Ideally this means I could change of renderer to be opengl. Or even a ascii ouput and keep the same interface...
+	though the concept of pixels is still a little ingrained into the philosophy of maprenderer
+
+maprenderer interfaces directly to renderer. It is part of the app and not a module.
+
+
+add ability to have viewports so zooming could happen for much larget scale models
+
+

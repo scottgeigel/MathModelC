@@ -55,7 +55,13 @@ void DrawMap(void)
         y = ScreenInfo.startY;
         for (r = 0; r < ScreenInfo.map->rows; ++r)
         {
-            if (ScreenInfo.lastDrawn[c][r] != debug)
+            if (map->tiles[c][r].agent != NULL)
+            {
+                Model_Agent* agent = map->tiles[c][r].agent;
+                Atlas_index_t idx = Atlas_FindByName(Renderer_GetAtlas(), agent->class);
+                Renderer_DrawResource(idx, x, y, map->cols, map->rows);
+            }
+            else if (ScreenInfo.lastDrawn[c][r] != debug)
             {
                 frameChanged = true;
                 ScreenInfo.lastDrawn[c][r] = debug;
