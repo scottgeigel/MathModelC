@@ -48,3 +48,15 @@ Model_Agent* Model_Map_GetAgent(const Model_Map* this, int x, int y)
         return this->tiles[x][y].agent;
     }
 }
+
+void Model_Map_Free(Model_Map* this)
+{
+    int i;
+    for (i = 0; i < this->cols; ++i)
+    {
+        free(this->tiles[i]);
+        this->tiles[i] = NULL;
+    }
+    free(this->tiles);
+    this->tiles = NULL;
+}

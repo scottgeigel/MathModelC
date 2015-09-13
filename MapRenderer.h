@@ -18,5 +18,5 @@ void StartScene(const Model_Map* map, int xres, int yres);
     Updates map compilation if necessary
 */
 void DrawMap(void);
-
+void EndScene();
 #endif

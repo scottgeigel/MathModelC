@@ -83,6 +83,15 @@ Atlas_index_t Renderer_AddResource(const char* path, const char* name)
 
 void Renderer_Quit()
 {
+    Atlas_Entry tmp;
+    Atlas_index_t idx = Atlas_Iterator_Start(&atlas);
+    while(idx != Atlas_index_npos)
+    {
+        Atlas_Remove(&atlas, idx, &tmp);
+        SDL_FreeSurface(tmp.texture);
+        idx = Atlas_Iterator_Next(&atlas, idx);
+    }
+
     SDL_DestroyWindow(window);
     SDL_Quit();
 }

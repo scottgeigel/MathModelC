@@ -1,6 +1,8 @@
 #include "MapRenderer.h"
 #include "Renderer/Renderer.h"
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 static struct
 {
@@ -43,6 +45,16 @@ void StartScene(const Model_Map* map, int xres, int yres)
         ScreenInfo.lastDrawn[i] = calloc(map->rows, sizeof(Atlas_index_t));
         memset(ScreenInfo.lastDrawn[i], Atlas_index_npos, map->rows * sizeof(Atlas_index_t));
     }
+}
+
+void EndScene()
+{
+    int i;
+    for(i = 0; i < ScreenInfo.map->cols; ++i)
+    {
+        free(ScreenInfo.lastDrawn[i]);
+    }
+    free(ScreenInfo.lastDrawn);
 }
 
 void DrawMap(void)

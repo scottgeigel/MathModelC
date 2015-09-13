@@ -1,15 +1,13 @@
 #include "ConwayCell.h"
 #include "Configuration.h" //for agent defs
 #include <stdio.h>
-
-#include <assert.h>
+#include <stdlib.h>
 
 static int liveCells = 0;
 static int deadCells = 0;
 
-#define MAX_CELLS (10*12)
-static ConwayCell debug[MAX_CELLS];//TODO: fix this
-static Model_Map* debug2;
+#define MAX_CELLS (10*12)//TODO: remove in favor of parameters in init
+ConwayCell* conwayCells;
 
 //TODO: This will cause a bug. transitions need to be queued as they will alter events on a bias for who had their turn first
 static void TransitionToAlive(ConwayCell* this)
@@ -143,52 +141,30 @@ void ConwaysGameOfLife_Init(Model_Map* map)
     int i;
     int x = 0;
     int y = 0;
-    debug2 = map;
+
+    conwayCells = calloc(MAX_CELLS, sizeof(ConwayCell));
     for (i = 0; i < MAX_CELLS; ++i)
     {
-        ConwayCell_Init(&debug[i], Model_Random_Between(1, 100) > 60);
-        Model_PlaceAgent(&debug[i].super, x, y++);
+        ConwayCell_Init(&conwayCells[i], Model_Random_Between(1, 100) > 60);
 
-        if (y == map->rows)
+        if (!Model_PlaceAgent(&conwayCells[i].super, x, y))
+        {
+            //TODO: make a function for this
+            fprintf(stderr, "Error at %s:%s in %s(map = %p)\n%p could not be placed at %d,%d\n", __FILE__, __LINE__, __FUNCTION__, map, &conwayCells[i], x, y);
+            abort();
+        }
+
+        if (++y == map->rows)
         {
             y = 0;
             x++;
         }
-        //debug[i].super.x = 2 + i;
-        //debug[i].super.y = 1 + (i/2);
-        //map->tiles[debug[i].super.x][debug[i].super.y].agent = &debug[i].super;
     }
 }
 
 void ConwaysGameOfLife_Next(void)
 {
-    int i;
-    Model_Message* msg;
-
-    printf("\n\nBEGIN DEBUG\n");
-    {
-        int i,j;
-        for (j = 0; j < debug2->rows; ++j)
-        {
-            for (i = 0; i < debug2->cols; ++i)
-            {
-                printf("%c ", debug2->tiles[i][j].agent->class[0]);
-            }
-            printf("\n");
-        }
-    }
-
-    printf("\nEND DEBUG\n\n");
-    for (i = 0; i < MAX_CELLS; ++i)
-    {
-        debug[i].super.agenda((Model_Agent*) &debug[i], debug2);
-    }
-
-    while((msg = Model_GetNextMessage()) != NULL)
-    {
-        printf("%d,%d Proccessing %s to %p\n",msg->effected->x,msg->effected->y, msg->message, msg->effected);
-        msg->effected->messageHandler(msg->effected, msg->message);
-    }
+    //TODO: delete me?
 }
 
 void ConwayCell_Init(ConwayCell* this, bool alive)
@@ -207,4 +183,10 @@ void ConwayCell_Init(ConwayCell* this, bool alive)
     Model_Agent_Init(super, class);
     super->agenda = Agenda;
     super->messageHandler = MessageHandler;
+}
+
+void ConwayCell_Free()
+{
+    free(conwayCells);
+    conwayCells = NULL;
 }

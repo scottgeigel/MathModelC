@@ -1,19 +1,13 @@
 #include "Atlas.h"
-
+#include <string.h>
 void Atlas_Init(Atlas* this)
 {
     memset(&this->entries[0], 0, sizeof(Atlas));
 }
 
-void Atlas_Dump(Atlas* this)
+void Atlas_Free(Atlas* this)
 {
-    Atlas_index_t i;
-    printf("[\n");
-    for (i = 0; i < MAX_TEXTURES; ++i)
-    {
-        Atlas_Entry *entry = &this->entries[i];
-        printf("\t%d: {%p, %s}\n", i, entry->texture, entry->name);
-    }
+    //nothing to free
 }
 
 //TODO:would be better if it just returned a pointer
@@ -36,11 +30,11 @@ const Atlas_Entry* Atlas_Get(Atlas* this, Atlas_index_t idx)
     }
     else
     {
-        return NULL;//return something else? setjmp?
+        return NULL;
     }
 }
 
-Atlas_index_t Atlas_Insert(Atlas* this, const char* name, SDL_Surface* surface)
+Atlas_index_t Atlas_Insert(Atlas* this, const char* name, texture_t* surface)
 {
     //TODO: more efficient search
     Atlas_index_t i;
@@ -51,7 +45,6 @@ Atlas_index_t Atlas_Insert(Atlas* this, const char* name, SDL_Surface* surface)
         {
             strcpy(&this->entries[i].name[0], name);
             this->entries[i].texture = surface;
-            printf("Inserting %s, %p into %d\n", name, (void*)surface, i);
             return i;
         }
     }
@@ -72,4 +65,20 @@ Atlas_Entry* Atlas_Remove(Atlas* this, Atlas_index_t idx, Atlas_Entry* out)
         ret = NULL;
     }
     return ret;
+}
+
+
+Atlas_index_t Atlas_Iterator_Start(Atlas* this)
+{
+    Atlas_Iterator_Next(this, 0);
+}
+
+Atlas_index_t Atlas_Iterator_Next(Atlas* this, Atlas_index_t from)
+{
+    for (from; from < MAX_TEXTURES; ++from)
+    {
+        if (this->entries[from].texture != NULL)
+            return from;
+    }
+    return Atlas_index_npos;
 }

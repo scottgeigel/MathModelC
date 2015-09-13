@@ -1,11 +1,17 @@
 #include "Model.h"
 #include "Random.h"
 #include <stdio.h>
+#include <string.h>
 
 static Model_Map* map = NULL;
 static Model_Message msgqueue[MAX_MESSAGES];
 int q_head;
 int q_tail;
+
+//TODO: Message queues may need to be a per agent basis. Example: 1 message tells the agent to remove itself, the other tells the free'd data to do something else
+#define COMPARTMENT_SIZE 128 //TODO: fix
+static Model_Agent* agents[COMPARTMENT_SIZE];
+static Model_Agent** pAgentsEnd = agents;
 
 void Model_Init(Model_Map* _map)
 {
@@ -14,12 +20,40 @@ void Model_Init(Model_Map* _map)
     memset(msgqueue, 0, sizeof(msgqueue));
     q_head = 0;
     q_tail = 0;
+
+    memset(agents, 0, sizeof(agents));
+}
+
+void Model_Free()
+{
+    map = NULL;
+    memset(msgqueue, 0, sizeof(msgqueue));
+    memset(agents, 0, sizeof(agents));
+}
+
+static void UpdatePositions()
+{
+    Model_Agent** pAgent = agents;
+    while (pAgent != pAgentsEnd)
+    {
+        (*pAgent)->agenda(*pAgent, map);
+        pAgent++;
+    }
+}
+
+static void HandleMessages()
+{
+    Model_Message* msg;
+    while((msg = Model_GetNextMessage()) != NULL)
+    {
+        msg->effected->messageHandler(msg->effected, msg->message);
+    }
 }
 
 void Model_Next()
 {
-    //HandleMessages();
-    //UpdatePositions();
+    UpdatePositions();
+    HandleMessages();
 }
 
 bool Model_PlaceAgent(Model_Agent* agent, int x, int y)
@@ -30,7 +64,8 @@ bool Model_PlaceAgent(Model_Agent* agent, int x, int y)
         *target = agent;
         agent->x = x;
         agent->y = y;
-        printf("Placed %p at %d, %d\n", agent, x, y);
+
+        *pAgentsEnd++ = agent;
         return true;
     }
     else

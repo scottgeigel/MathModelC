@@ -12,6 +12,7 @@ typedef struct
 }Model_Message;
 
 void Model_Init(Model_Map* _map);
+void Model_Free();
 void Model_Next();
 bool Model_PlaceAgent(Model_Agent* agent, int x, int y);
 //void Model_PlaceAgentRandom(Model_Agent* agent);
