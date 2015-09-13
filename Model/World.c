@@ -1,6 +1,8 @@
 #include "Model.h"
 #include <stdlib.h>
 #include <string.h>
+
+#include <stdio.h>
 void Model_Map_Init(Model_Map* this, int cols, int rows)
 {
     int i,j;
@@ -37,10 +39,12 @@ Model_Agent* Model_Map_GetAgent(const Model_Map* this, int x, int y)
     //should this have an exception/setjmp of some kind instead?
     if ((x < 0) || (x >= this->cols) || (y < 0) || (y >= this->rows))
     {
+        //printf("%d, %d invalid\n", x, y);
         return NULL;
     }
     else
     {
+        //printf("Returning %p\n", this->tiles[x][y].agent);
         return this->tiles[x][y].agent;
     }
 }

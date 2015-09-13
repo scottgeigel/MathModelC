@@ -14,13 +14,15 @@ static struct
     Atlas_index_t **lastDrawn;
 }ScreenInfo;
 
-Atlas_index_t debug;
+Atlas_index_t defaultTile;
 
 static Model_Map* map = NULL;
+static Atlas* atlas = NULL;
 
 void StartScene(const Model_Map* map, int xres, int yres)
 {
-    debug = Renderer_AddResource("res/tile.bmp", "tile");
+    atlas = Renderer_GetAtlas();
+    defaultTile = Atlas_FindByName(atlas, "tile");
 
     int remy,remx; //remainders if tiles to not fit perfectly
     int i;
@@ -55,17 +57,22 @@ void DrawMap(void)
         y = ScreenInfo.startY;
         for (r = 0; r < ScreenInfo.map->rows; ++r)
         {
+            Atlas_index_t idx;
             if (map->tiles[c][r].agent != NULL)
             {
                 Model_Agent* agent = map->tiles[c][r].agent;
-                Atlas_index_t idx = Atlas_FindByName(Renderer_GetAtlas(), agent->class);
-                Renderer_DrawResource(idx, x, y, map->cols, map->rows);
+                idx = Atlas_FindByName(Renderer_GetAtlas(), agent->class);
             }
-            else if (ScreenInfo.lastDrawn[c][r] != debug)
+            else
             {
+                idx = defaultTile;
+            }
+
+            if (ScreenInfo.lastDrawn[c][r] != idx)
+            {
+                Renderer_DrawResource(idx, x, y, map->cols, map->rows);
                 frameChanged = true;
-                ScreenInfo.lastDrawn[c][r] = debug;
-                Renderer_DrawResource(debug, x, y, map->cols, map->rows);
+                ScreenInfo.lastDrawn[c][r] = idx;
             }
             y += ScreenInfo.tileSizeY;
         }

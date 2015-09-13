@@ -8,9 +8,10 @@ void main()
     bool singleStep = true;
     Model_Map map;
     Renderer_Init(screenWidth, screenHeight);
-    Renderer_AddResource("res/conwayCell.bmp", "Conway Cell");
-    
-    Model_Map_Init(&map, 30, 25);
+    LoadConfiguration();
+
+    Model_Map_Init(&map, 10, 12);
+    Model_Init(&map);
 
     StartScene(&map, screenWidth, screenHeight);
     ConwaysGameOfLife_Init(&map);
