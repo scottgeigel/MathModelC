@@ -1,15 +1,14 @@
-#include "ConwayCell.h"
+#include "ModelApp.h"
 #include "Configuration.h" //for agent defs
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 static int liveCells = 0;
 static int deadCells = 0;
 
-#define MAX_CELLS (10*12)//TODO: remove in favor of parameters in init
 ConwayCell* conwayCells;
 
-//TODO: This will cause a bug. transitions need to be queued as they will alter events on a bias for who had their turn first
 static void TransitionToAlive(ConwayCell* this)
 {
     liveCells++;
@@ -98,21 +97,20 @@ static void Agenda(Model_Agent* this, const Model_Map* map)
     if(neighbour->alive)
         cellCount++;
 
-    printf("%s at %d,%d has %d neighbours\n", this->class, this->x, this->y, cellCount);
 
-    //Any live cell with fewer than two live neighbours dies, as if caused by under-population.
-    //Any live cell with more than three live neighbours dies, as if by overcrowding.
-    if ((cellCount < 2) || (cellCount > 3))
+    //Any live cell with two or three live neighbours lives on to the next generation.
+    if ((cellCount == 2) || (cellCount == 3))
+        return;
+    else if (((cellCount < 2) || (cellCount > 3)) && cell->alive)
     {
+        //Any live cell with fewer than two live neighbours dies, as if caused by   under-population.
+        //Any live cell with more than three live neighbours dies, as if by     overcrowding.
         msg.message = "die";
         Model_QueueMessage(&msg);
     }
-    //Any live cell with two or three live neighbours lives on to the next generation.
-    if ((cellCount == 2) || (cellCount == 3))
-        ;//printf("survive\n");//survive
-    //Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-    if ((cellCount == 3) && (!cell->alive))
+    else if ((cellCount == 3) && (!cell->alive))
     {
+        //Any dead cell with exactly three live neighbours becomes a live cell, as  if by reproduction.
         msg.message = "live";
         Model_QueueMessage(&msg);
     }
@@ -138,6 +136,7 @@ static void MessageHandler(Model_Agent* this, const char* message)
 
 void ConwaysGameOfLife_Init(Model_Map* map)
 {
+    const int MAX_CELLS = map->cols * map->rows;
     int i;
     int x = 0;
     int y = 0;
@@ -149,7 +148,7 @@ void ConwaysGameOfLife_Init(Model_Map* map)
         if (!Model_PlaceAgent(&conwayCells[i].super, x, y))
         {
             //TODO: make a function for this
-            fprintf(stderr, "Error at %s:%s in %s(map = %p)\n%p could not be placed at %d,%d\n", __FILE__, __LINE__, __FUNCTION__, map, &conwayCells[i], x, y);
+            fprintf(stderr, "Error at %s:%d in %s(map = %p)\n%p could not be placed at %d,%d\n", __FILE__, __LINE__, __FUNCTION__, map, &conwayCells[i], x, y);
             abort();
         }
 

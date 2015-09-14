@@ -112,9 +112,9 @@ void Renderer_DrawResource(Atlas_index_t idx, int x, int y, int scaleFactorX, in
         screenDimensions.y = y;
         screenDimensions.w = screen->w / scaleFactorX;
         screenDimensions.h = screen->h / scaleFactorY;
-        printf("Blitting texture #%d %s(%p) at %d,%d size %dx%d\n",
-                idx, entry->name, (void*) entry->texture,
-                 x, y, screenDimensions.w, screenDimensions.h);
+        //printf("Blitting texture #%d %s(%p) at %d,%d size %dx%d\n",
+        //        idx, entry->name, (void*) entry->texture,
+        //         x, y, screenDimensions.w, screenDimensions.h);
         if (SDL_BlitScaled(surface, NULL, screen, &screenDimensions))
         {
             snprintf(lastError, sizeof(lastError), "Scaling failed: %s", SDL_GetError());
@@ -124,6 +124,11 @@ void Renderer_DrawResource(Atlas_index_t idx, int x, int y, int scaleFactorX, in
     {
         snprintf(lastError, sizeof(lastError), "Could not find %s. Pleas use AddResource(name, path) first.", SDL_GetError());
     }
+}
+
+const char* Renderer_GetLastError()
+{
+    return lastError;
 }
 
 Atlas* Renderer_GetAtlas()

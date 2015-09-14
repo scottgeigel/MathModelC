@@ -28,5 +28,6 @@ void Renderer_Quit(void);
 void Renderer_Update(void);
 const char* Renderer_GetLastError(void);
 void Renderer_DrawResource(Atlas_index_t idx, int x, int y, int scaleFactorX, int scaleFactorY);
+const char* Renderer_GetLastError();
 Atlas* Renderer_GetAtlas();
 #endif
