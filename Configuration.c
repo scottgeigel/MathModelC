@@ -1,5 +1,5 @@
 #include "Configuration.h"
-#include "Renderer/Renderer.h"
+#include "MapRenderer/Renderer/Renderer.h"
 void LoadConfiguration()
 {
     Renderer_AddResource(PATH_TO_CONWAY_CELL_IMG, CONWAY_CELL_CLASS);

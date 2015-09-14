@@ -1,6 +1,9 @@
 #include "Model/Model.h"
 #include "InputHandler/InputHandler.h"
-#include "MapRenderer.h"
+#include "MapRenderer/MapRenderer.h"
+
+const int modelHeight;
+const int modelWidth;
 void main()
 {
     const int screenHeight  = 600;

@@ -11,7 +11,6 @@
 //Application overides
 #define PATH_TO_DEFAULT_TILE_IMG "res/tile.bmp"
 
-//Application Defaults
-
+//Application info
 void LoadConfiguration();
 #endif

@@ -141,7 +141,6 @@ void ConwaysGameOfLife_Init(Model_Map* map)
     int i;
     int x = 0;
     int y = 0;
-
     conwayCells = calloc(MAX_CELLS, sizeof(ConwayCell));
     for (i = 0; i < MAX_CELLS; ++i)
     {
