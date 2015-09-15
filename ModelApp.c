@@ -190,7 +190,7 @@ void AppInit(int mapHeight, int mapWidth)
 
 void AppNext(void)
 {
-    //TODO: delete me?
+    //TODO: implement if necessary
 }
 
 void AppEnd()

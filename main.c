@@ -189,7 +189,7 @@ static __attribute__((noreturn)) void StartModel()
     Model_Map_Init(&map, Options.mapWidth, Options.mapHeight);
     Model_Init(&map);
 
-    StartScene(&map, screenWidth, screenHeight);
+    MapRenderer_StartScene(&map, screenWidth, screenHeight);
     AppInit(Options.mapHeight, Options.mapWidth);
     while(!InputHandler_ExitRequested())
     {
@@ -198,10 +198,10 @@ static __attribute__((noreturn)) void StartModel()
             Model_Next();
             AppNext();
         }
-        DrawMap();
+        MapRenderer_DrawMap();
     }
     AppEnd();
-    EndScene();
+    MapRenderer_EndScene();
     Model_Map_Free(&map);
     Model_Free();
     Renderer_Quit();//TODO: move this up a level

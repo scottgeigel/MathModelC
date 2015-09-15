@@ -21,7 +21,7 @@ Atlas_index_t defaultTile;
 static Model_Map* map = NULL;
 static Atlas* atlas = NULL;
 
-void StartScene(const Model_Map* map, int xres, int yres)
+void MapRenderer_StartScene(const Model_Map* map, int xres, int yres)
 {
     atlas = Renderer_GetAtlas();
     defaultTile = Atlas_FindByName(atlas, "tile");
@@ -47,7 +47,7 @@ void StartScene(const Model_Map* map, int xres, int yres)
     }
 }
 
-void EndScene()
+void MapRenderer_EndScene()
 {
     int i;
     for(i = 0; i < ScreenInfo.map->cols; ++i)
@@ -57,7 +57,7 @@ void EndScene()
     free(ScreenInfo.lastDrawn);
 }
 
-void DrawMap(void)
+void MapRenderer_DrawMap(void)
 {
 
     int x,y,c,r;//x position, y position, collumn index, row index
