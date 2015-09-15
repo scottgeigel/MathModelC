@@ -145,39 +145,6 @@ bool ParseArgv(int argc, const char *argv[])
     return error;
 }
 
-static __attribute__((noreturn)) void StartModel()
-{
-    const int screenHeight  = 600;
-    const int screenWidth   = 800;
-    const bool singleStep         = Options.singleStep;
-    Model_Map map;
-
-    if (Renderer_Init(screenWidth, screenHeight) != Renderer_SUCCESS) //TODO: move this up a level
-    {
-        printf(Renderer_GetLastError());
-        exit(1);
-    }
-    LoadConfiguration();
-
-    Model_Map_Init(&map, Options.mapWidth, Options.mapHeight);
-    Model_Init(&map);
-
-    StartScene(&map, screenWidth, screenHeight);
-    ConwaysGameOfLife_Init(&map);
-    while(!InputHandler_ExitRequested())
-    {
-        if(!singleStep || InputHandler_NextStepRequested())
-            Model_Next();
-        DrawMap();
-    }
-    ConwayCell_Free();
-    EndScene();
-    Model_Map_Free(&map);
-    Model_Free();
-    Renderer_Quit();//TODO: move this up a level
-    exit(0);
-}
-
 static __attribute__((noreturn)) void PrintUsage(const char* programName)
 {
     const int stop = sizeof(options) / sizeof(struct Option);
@@ -202,6 +169,42 @@ static __attribute__((noreturn)) void PrintUsage(const char* programName)
 
         printf(fmt, options[i].longOption, options[i].shortOption, options[i].about);
     }
+    exit(0);
+}
+
+static __attribute__((noreturn)) void StartModel()
+{
+    const int screenHeight  = 768;
+    const int screenWidth   = 1024;
+    const bool singleStep   = Options.singleStep;
+    Model_Map map;
+
+    if (Renderer_Init(screenWidth, screenHeight) != Renderer_SUCCESS) //TODO: move this up a level
+    {
+        printf(Renderer_GetLastError());
+        exit(1);
+    }
+    LoadConfiguration();
+
+    Model_Map_Init(&map, Options.mapWidth, Options.mapHeight);
+    Model_Init(&map);
+
+    StartScene(&map, screenWidth, screenHeight);
+    AppInit(Options.mapHeight, Options.mapWidth);
+    while(!InputHandler_ExitRequested())
+    {
+        if(!singleStep || InputHandler_NextStepRequested())
+        {
+            Model_Next();
+            AppNext();
+        }
+        DrawMap();
+    }
+    AppEnd();
+    EndScene();
+    Model_Map_Free(&map);
+    Model_Free();
+    Renderer_Quit();//TODO: move this up a level
     exit(0);
 }
 

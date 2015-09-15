@@ -1,8 +1,16 @@
 #include "ModelApp.h"
+#include "Model/Model.h"
 #include "Configuration.h" //for agent defs
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+typedef struct
+{
+    Model_Agent super;
+    bool alive;
+}ConwayCell;
 
 static int liveCells = 0;
 static int deadCells = 0;
@@ -99,7 +107,7 @@ static void Agenda(Model_Agent* this, const Model_Map* map)
 
 
     //Any live cell with two or three live neighbours lives on to the next generation.
-    if ((cellCount == 2) || (cellCount == 3))
+    if (cell->alive && ((cellCount == 2) || (cellCount == 3)))
         return;
     else if (((cellCount < 2) || (cellCount > 3)) && cell->alive)
     {
@@ -134,36 +142,6 @@ static void MessageHandler(Model_Agent* this, const char* message)
 }
 
 
-void ConwaysGameOfLife_Init(Model_Map* map)
-{
-    const int MAX_CELLS = map->cols * map->rows;
-    int i;
-    int x = 0;
-    int y = 0;
-    conwayCells = calloc(MAX_CELLS, sizeof(ConwayCell));
-    for (i = 0; i < MAX_CELLS; ++i)
-    {
-        ConwayCell_Init(&conwayCells[i], Model_Random_Between(1, 100) > 60);
-
-        if (!Model_PlaceAgent(&conwayCells[i].super, x, y))
-        {
-            //TODO: make a function for this
-            fprintf(stderr, "Error at %s:%d in %s(map = %p)\n%p could not be placed at %d,%d\n", __FILE__, __LINE__, __FUNCTION__, map, &conwayCells[i], x, y);
-            abort();
-        }
-
-        if (++y == map->rows)
-        {
-            y = 0;
-            x++;
-        }
-    }
-}
-
-void ConwaysGameOfLife_Next(void)
-{
-    //TODO: delete me?
-}
 
 void ConwayCell_Init(ConwayCell* this, bool alive)
 {
@@ -183,7 +161,39 @@ void ConwayCell_Init(ConwayCell* this, bool alive)
     super->messageHandler = MessageHandler;
 }
 
-void ConwayCell_Free()
+
+void AppInit(int mapHeight, int mapWidth)
+{
+    const int MAX_CELLS = mapHeight * mapWidth;
+    int i;
+    int x = 0;
+    int y = 0;
+    conwayCells = calloc(MAX_CELLS, sizeof(ConwayCell));
+    for (i = 0; i < MAX_CELLS; ++i)
+    {
+        ConwayCell_Init(&conwayCells[i], Model_Random_Between(1, 100) > 60);
+
+        if (!Model_PlaceAgent(&conwayCells[i].super, x, y))
+        {
+            //TODO: make a function for this
+            fprintf(stderr, "Error at %s:%d in %s\n%p could not be placed at %d,%d\n", __FILE__, __LINE__, __FUNCTION__, &conwayCells[i], x, y);
+            abort();
+        }
+
+        if (++y == mapHeight)
+        {
+            y = 0;
+            x++;
+        }
+    }
+}
+
+void AppNext(void)
+{
+    //TODO: delete me?
+}
+
+void AppEnd()
 {
     free(conwayCells);
     conwayCells = NULL;
