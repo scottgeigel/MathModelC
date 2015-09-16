@@ -1,10 +1,13 @@
 #include "Model.h"
 #include "Random.h"
+#include "ModelApp.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 static Model_Map* map = NULL;
+static FILE* graphOutputFile = NULL;
+static unsigned long iterationCount;
 /*static Model_Message *msgqueue;
 int q_max_size;
 int q_head;
@@ -85,6 +88,7 @@ static int max_agents;
 
 void Model_Init(Model_Map* _map)
 {
+    iterationCount = 0;
     map = _map;
     Model_Random_Init();
 
@@ -99,6 +103,11 @@ void Model_Init(Model_Map* _map)
     agents = calloc(max_agents, sizeof(Model_Agent*));
     pAgentsEnd = agents;
     agent_Boundry = &agents[max_agents];
+
+    graphOutputFile = fopen("outgraph.csv", "w");
+    Model_Grapher_Start(graphOutputFile);
+    Model_Grapher_AddColDef("iteration");
+    AppInit(map->rows, map->cols);
 }
 
 void Model_Free()
@@ -109,6 +118,10 @@ void Model_Free()
     //msgqueue = NULL;
     free(agents);
     agents = NULL;
+    Model_Grapher_End();
+    fclose(graphOutputFile);
+    graphOutputFile = NULL;
+    AppEnd();
 }
 
 static void UpdatePositions()
@@ -123,18 +136,36 @@ static void UpdatePositions()
 
 static void HandleMessages()
 {
+    bool somethingHappened = !Queue_Empty(&msgqueue);
     Model_Message* msg;
     while((msg = Model_GetNextMessage()) != NULL)
     {
         msg->effected->messageHandler(msg->effected, msg->message);
         free(msg);
     }
+    if (somethingHappened)
+        iterationCount++;
 }
 
 void Model_Next()
 {
     UpdatePositions();
     HandleMessages();
+    AppNext();  
+}
+
+void Model_GraphIteration()
+{
+    static unsigned long lastIterationCount = 0 - 1;
+    if (lastIterationCount != iterationCount)
+    {
+        lastIterationCount = iterationCount;
+        char buf[80];
+        snprintf(buf, 80, "%lu", iterationCount);
+        Model_Grapher_AddRowToCol("iteration", buf);
+        AppGraphIteration();
+        Model_Grapher_NextRow();
+    }
 }
 
 bool Model_PlaceAgent(Model_Agent* agent, int x, int y)
@@ -165,7 +196,7 @@ bool Model_PlaceAgent(Model_Agent* agent, int x, int y)
     }
     else
     {
-        printf("%p collided with %#X at %d, %d\n", agent, *target, x, y);
+        printf("%p collided with %p at %d, %d\n", agent, *target, x, y);
         return false;
     }
 }

@@ -7,7 +7,8 @@ void Atlas_Init(Atlas* this)
 
 void Atlas_Free(Atlas* this)
 {
-    //nothing to free
+    //reset everything back to 0's... sure hope you free'd those textures before you called this :)
+    Atlas_Init(this);
 }
 
 //TODO:would be better if it just returned a pointer
@@ -70,7 +71,7 @@ Atlas_Entry* Atlas_Remove(Atlas* this, Atlas_index_t idx, Atlas_Entry* out)
 
 Atlas_index_t Atlas_Iterator_Start(Atlas* this)
 {
-    Atlas_Iterator_Next(this, 0);
+    return Atlas_Iterator_Next(this, 0);
 }
 
 Atlas_index_t Atlas_Iterator_Next(Atlas* this, Atlas_index_t from)

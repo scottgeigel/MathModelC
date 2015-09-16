@@ -12,5 +12,6 @@
 #define PATH_TO_DEFAULT_TILE_IMG "res/tile.bmp"
 
 //Application info
+#define AppName "Conway's Game Of Life"
 void LoadConfiguration();
 #endif

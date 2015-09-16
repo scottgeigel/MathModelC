@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Configuration.h" // for AppName
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -49,7 +50,7 @@ Renderer_Error Renderer_Init(int xres, int yres)
     }
     else
     {
-        window = SDL_CreateWindow("Zombies vs Humans", SDL_WINDOWPOS_UNDEFINED,
+        window = SDL_CreateWindow(AppName, SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
                             SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if ( window == NULL)

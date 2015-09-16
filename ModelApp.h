@@ -3,4 +3,5 @@
 void AppInit(int mapHeight, int mapWidth);
 void AppEnd();
 void AppNext();
+void AppGraphIteration();
 #endif

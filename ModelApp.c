@@ -143,15 +143,17 @@ static void MessageHandler(Model_Agent* this, const char* message)
 
 
 
-void ConwayCell_Init(ConwayCell* this, bool alive)
+static void ConwayCell_Init(ConwayCell* this, bool alive)
 {
     const char* class;
     if (alive)
     {
+        liveCells++;
         class = CONWAY_CELL_CLASS;
     }
     else
     {
+        deadCells++;
         class = DEAD_CELL_CLASS;
     }
     this->alive = alive;
@@ -186,11 +188,22 @@ void AppInit(int mapHeight, int mapWidth)
             x++;
         }
     }
+    Model_Grapher_AddColDef("live");
+    Model_Grapher_AddColDef("dead");
 }
 
 void AppNext(void)
 {
     //TODO: implement if necessary
+}
+
+void AppGraphIteration()
+{
+    char buf[80];
+    snprintf(buf, 80, "%d", liveCells);
+    Model_Grapher_AddRowToCol("live", buf);
+    snprintf(buf, 80, "%d", deadCells);
+    Model_Grapher_AddRowToCol("dead", buf);
 }
 
 void AppEnd()

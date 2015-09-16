@@ -18,7 +18,6 @@ static struct
 
 Atlas_index_t defaultTile;
 
-static Model_Map* map = NULL;
 static Atlas* atlas = NULL;
 
 void MapRenderer_StartScene(const Model_Map* map, int xres, int yres)

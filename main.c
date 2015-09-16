@@ -1,5 +1,4 @@
 #include "Configuration.h"
-#include "ModelApp.h"
 #include "Model/Model.h"
 #include "InputHandler/InputHandler.h"
 #include "MapRenderer/Renderer/Renderer.h" //TODO: move this up a level
@@ -190,17 +189,15 @@ static __attribute__((noreturn)) void StartModel()
     Model_Init(&map);
 
     MapRenderer_StartScene(&map, screenWidth, screenHeight);
-    AppInit(Options.mapHeight, Options.mapWidth);
     while(!InputHandler_ExitRequested())
     {
         if(!singleStep || InputHandler_NextStepRequested())
         {
             Model_Next();
-            AppNext();
+            Model_GraphIteration();
         }
         MapRenderer_DrawMap();
     }
-    AppEnd();
     MapRenderer_EndScene();
     Model_Map_Free(&map);
     Model_Free();
