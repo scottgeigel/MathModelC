@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "Random.h"
 #include "ModelApp.h"
+#include "Types/DynamicQueue.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,70 +15,6 @@ int q_head;
 int q_tail;
 int q_count;*/
 
-struct QueueNode;
-typedef struct QueueNode QueueNode;
-struct QueueNode
-{
-    void *data;
-    QueueNode *next;
-};
-typedef struct
-{
-    int debug_count;
-    QueueNode *head;
-    QueueNode *tail;
-}Queue;
-
-static void Queue_Init(Queue* this)
-{
-    this->debug_count = 0;
-    this->head = NULL;
-    this->tail = NULL;
-}
-static bool Queue_Empty(Queue* this)
-{
-    return this->head == NULL;
-}
-static void Queue_InsertP(Queue* this, void *ptr)
-{
-    QueueNode* newNode = malloc(sizeof(QueueNode));
-    newNode->data = ptr;
-    newNode->next = NULL;
-    if (this->head == NULL)
-    {
-        this->head = this->tail = newNode;
-    }
-    else
-    {
-        this->tail->next = newNode;
-        this->tail = newNode;
-    }
-    this->debug_count++;
-}
-
-static void* Queue_Next(Queue* this)
-{
-    void * ret = NULL;
-    QueueNode *tmp = this->head;
-    if (tmp == NULL)
-    {
-        return NULL;
-    }
-    ret = tmp->data;
-    this->head = tmp->next;
-    tmp->next = NULL;
-    tmp->data = NULL;
-    free(tmp);
-    this->debug_count--;
-    return ret;
-}
-static void Queue_Destroy(Queue* this)
-{
-    while(Queue_Next(this) != NULL);
-    this->head = NULL;
-    this->tail = NULL;
-    if(!Queue_Empty(this)) abort();
-}
 static Queue msgqueue;
 
 //TODO: Message queues may need to be a per agent basis. Example: 1 message tells the agent to remove itself, the other tells the free'd data to do something else
@@ -151,7 +88,7 @@ void Model_Next()
 {
     UpdatePositions();
     HandleMessages();
-    AppNext();  
+    AppNext();
 }
 
 void Model_GraphIteration()
@@ -199,6 +136,44 @@ bool Model_PlaceAgent(Model_Agent* agent, int x, int y)
         printf("%p collided with %p at %d, %d\n", agent, *target, x, y);
         return false;
     }
+}
+
+bool Model_MoveAgent(Model_Agent* agent, int x, int y)
+{
+    Model_Agent** from   = &map->tiles[agent->x][agent->y].agent;
+    Model_Agent** to     = &map->tiles[x][y].agent;
+    if ((*from) == agent && (*to) == NULL)
+    {
+        agent->x = x;
+        agent->y = y;
+        *from = NULL;
+        *to = agent;
+    }
+    else
+    {
+        printf("agent %p from.agent %p to.agent %p\n", agent, *from, *to);
+        abort();
+    }
+}
+
+bool Model_PlaceAgentRandom(Model_Agent* agent)
+{
+    static int x = 0;
+    static int y = 0;
+    if(Model_PlaceAgent(agent, x, y++))
+    {
+        if (y == map->rows)
+        {
+            y = 0;
+            x++;
+        }
+        if (x == map->cols)
+        {
+            return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 //void Model_QueueMessage(Model_Message* msg)

@@ -25,6 +25,7 @@ static SDL_Surface* LoadBMP(const char* path)
     {
         ///TODO:move to Optimize function
         optimizedSurface = SDL_ConvertSurface(loadedSurface, screen->format, 0);
+        SDL_SetColorKey( optimizedSurface, SDL_TRUE, SDL_MapRGB( optimizedSurface->format, 0xff, 0xff, 0xff ) );// TODO: make customizable
 
         if (optimizedSurface == NULL)
         {

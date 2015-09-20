@@ -58,7 +58,6 @@ void MapRenderer_EndScene()
 
 void MapRenderer_DrawMap(void)
 {
-
     int x,y,c,r;//x position, y position, collumn index, row index
     const Model_Map * const map = ScreenInfo.map;
     x = ScreenInfo.startX;
@@ -81,6 +80,7 @@ void MapRenderer_DrawMap(void)
 
             if (ScreenInfo.lastDrawn[c][r] != idx)
             {
+                Renderer_DrawResource(defaultTile, x, y, map->cols, map->rows);//TODO: Fix this
                 Renderer_DrawResource(idx, x, y, map->cols, map->rows);
                 frameChanged = true;
                 ScreenInfo.lastDrawn[c][r] = idx;

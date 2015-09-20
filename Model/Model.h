@@ -16,6 +16,8 @@ void Model_Free();
 void Model_Next();
 void Model_GraphIteration();
 bool Model_PlaceAgent(Model_Agent* agent, int x, int y);
+bool Model_PlaceAgentRandom(Model_Agent* agent);
+bool Model_MoveAgent(Model_Agent* agent, int x, int y);
 void Model_QueueMessage(Model_Message* msg);
 Model_Message* Model_GetNextMessage();
 #endif

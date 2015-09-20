@@ -12,6 +12,7 @@ struct
 {
     bool printUsage;
     bool singleStep;
+    bool graph;
     int mapHeight;
     int mapWidth;
 }Options;
@@ -86,12 +87,19 @@ static OptionError WidthCallback(int* argsLeft, const char ** args)
     else
         return INVALID_PARAM;
 }
+
+static OptionError GraphCallback(int* argsLeft, const char ** args)
+{
+    Options.graph = true;
+    return SUCCESS;
+}
 struct Option options[] =
 {
         {"--help", "-h", "Print this message", HelpCallback},
         {"--singleStep", "-s", "Wait for the space key before running the next iteration of the model. Default is False", SingleStepCallback},
         {"--height", "-H", "[--height|-y] y   where y is the number of vertical tiles. Default is 10", HeightCallback},
-        {"--width", "-W", "[--width|-x] x    where x is the number of horizontal tiles. Default is 10", WidthCallback}
+        {"--width", "-W", "[--width|-x] x    where x is the number of horizontal tiles. Default is 10", WidthCallback},
+        {"--graph", "-g", "[--graph|-g] Enables graphing in CSV format.", GraphCallback}
 };
 bool ParseArgv(int argc, const char *argv[])
 {
@@ -100,6 +108,7 @@ bool ParseArgv(int argc, const char *argv[])
     bool error = false;
     Options.printUsage    = false;
     Options.singleStep    = false;
+    Options.graph         = false;
     Options.mapHeight     = 10;
     Options.mapWidth      = 10;
 
@@ -189,12 +198,14 @@ static __attribute__((noreturn)) void StartModel()
     Model_Init(&map);
 
     MapRenderer_StartScene(&map, screenWidth, screenHeight);
+
     while(!InputHandler_ExitRequested())
     {
         if(!singleStep || InputHandler_NextStepRequested())
         {
             Model_Next();
-            Model_GraphIteration();
+            if (Options.graph)
+                Model_GraphIteration();
         }
         MapRenderer_DrawMap();
     }
