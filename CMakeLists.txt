@@ -21,6 +21,16 @@ set (ZOMBIE_VS_HUMANS_SOURCE_FILES
     ModelApps/ZombiesVsHumans/Configuration.c
 )
 
+set (CONWAYS_GAME_OF_LIFE_SOURCE_FILES
+    ${BASE_FILES}
+    ModelApps/ConwaysGameOfLife/ModelApp.c
+    ModelApps/ConwaysGameOfLife/Configuration.c
+)
+
 add_executable(zombies_vs_humans ${ZOMBIE_VS_HUMANS_SOURCE_FILES})
 target_include_directories(zombies_vs_humans PUBLIC ModelApps/ZombiesVsHumans/)
 target_link_libraries(zombies_vs_humans inputhandler maprenderer renderer model types)
+
+add_executable(conways_game_of_life ${CONWAYS_GAME_OF_LIFE_SOURCE_FILES})
+target_include_directories(conways_game_of_life PUBLIC ModelApps/ConwaysGameOfLife/)
+target_link_libraries(conways_game_of_life inputhandler maprenderer renderer model types)
