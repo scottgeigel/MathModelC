@@ -27,7 +27,7 @@
 typedef struct
 {
     Model_Agent super;
-    bool alive
+    bool alive;
     int deadliness;
     int speed;
 
