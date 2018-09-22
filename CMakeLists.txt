@@ -10,12 +10,17 @@ add_subdirectory(Model)
 add_subdirectory(Types)
 message("libs: ${ADDITONAL_LIBS}")
 
+set (BASE_FILES
+    main.c
+)
 set (ZOMBIE_VS_HUMANS_SOURCE_FILES
+    ${BASE_FILES}
     ModelApps/ZombiesVsHumans/ModelApp.c
     ModelApps/ZombiesVsHumans/Humans.c
     ModelApps/ZombiesVsHumans/Zombies.c
     ModelApps/ZombiesVsHumans/Configuration.c
 )
 
-add_executable(zombies_vs_humans main.c ${ZOMBIE_VS_HUMANS_SOURCE_FILES})
+add_executable(zombies_vs_humans ${ZOMBIE_VS_HUMANS_SOURCE_FILES})
+target_include_directories(zombies_vs_humans PUBLIC ModelApps/ZombiesVsHumans/)
 target_link_libraries(zombies_vs_humans inputhandler maprenderer renderer model types)

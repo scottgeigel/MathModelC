@@ -1,5 +1,4 @@
 #include "Renderer.h"
-#include "Configuration.h" // for AppName
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -51,7 +50,19 @@ Renderer_Error Renderer_Init(int xres, int yres)
     }
     else
     {
-        window = SDL_CreateWindow(AppName, SDL_WINDOWPOS_UNDEFINED,
+        //TODO: this used to make the window title based on the model app's
+        //  configuration.h file. however, this won't work any more because
+        //  I don't want to rebuild this lib everytime I compile a different
+        //  model.
+        //  choices:
+        //      * change the cmake script to rebuild :(
+        //      * maybe move this to a resource manager like Renderer_AddResource has for images
+        //      * add it as some kind of parameter or something
+        //      * rethink this multiple-model target / plugin thing
+        // window = SDL_CreateWindow(AppName, SDL_WINDOWPOS_UNDEFINED,
+        //                     SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+        //                     SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        window = SDL_CreateWindow("Agent Based Model", SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
                             SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if ( window == NULL)
