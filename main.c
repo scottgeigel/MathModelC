@@ -194,7 +194,8 @@ static __attribute__((noreturn)) void StartModel()
     }
     LoadConfiguration();
 
-    Model_Map_Init(&map, Options.mapWidth, Options.mapHeight);
+    //TODO: make wrap option configurable
+    Model_Map_Init(&map, Options.mapWidth, Options.mapHeight, true);
     Model_Init(&map);
 
     MapRenderer_StartScene(&map, screenWidth, screenHeight);

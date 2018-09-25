@@ -37,86 +37,36 @@ static void TransitionToDead(ConwayCell* this)
 
 static void Agenda(Model_Agent* this, const Model_Map* map)
 {
-    const int x = this->x;
-    const int y = this->y;
-    int left, right, up, down;
+    Model_Message msg;
     ConwayCell *cell = (ConwayCell*)this;
     ConwayCell *neighbour = NULL;
+    int cell_count = 0;
+    const Model_Tile tiles[9]; //used to store 9 tiles encompassed in a 1 tile radius of the point
+    size_t tiles_count = Model_Map_ScanArea(map, tiles, this->x, this->y, 1);
+
     //Count cells
-    int cellCount = 0;
-    Model_Message msg;
+    for (size_t i = 0; i < tiles_count; i++)
+    {
+        neighbour = (ConwayCell*) tiles[i].agent;
+        if (neighbour->alive && (neighbour->super.x != this->x && neighbour->super.y != this->y))
+        {
+            cell_count++;
+        }
+    }
+
 
     msg.effected = this;
-
-    if ((x-1) < 0)
-        left = map->cols - 1;
-    else
-        left = x-1;
-
-    if ((x+1) == map->cols)
-        right = 0;
-    else
-        right = x+1;
-
-    if ((y-1) < 0)
-        up = map->rows - 1;
-    else
-        up = y - 1;
-
-    if ((y+1) == map->rows)
-        down = 0;
-    else
-        down = y + 1;
-
-
-    //left
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, left, y);
-    if(neighbour->alive)
-        cellCount++;
-    //right
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, right, y);
-    if(neighbour->alive)
-        cellCount++;
-
-    //down
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, x, down);
-    if(neighbour->alive)
-        cellCount++;
-    //up
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, x, up);
-    if(neighbour->alive)
-        cellCount++;
-
-    //left down
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, left, down);
-    if(neighbour->alive)
-        cellCount++;
-    //right down
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, right, down);
-    if(neighbour->alive)
-        cellCount++;
-
-    //left up
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, left, up);
-    if(neighbour->alive)
-        cellCount++;
-    //right up
-    neighbour = (ConwayCell *) Model_Map_GetAgent(map, right, up);
-    if(neighbour->alive)
-        cellCount++;
-
-
     //Any live cell with two or three live neighbours lives on to the next generation.
-    if (cell->alive && ((cellCount == 2) || (cellCount == 3)))
+    if (cell->alive && ((cell_count == 2) || (cell_count == 3)))
         return;
-    else if (((cellCount < 2) || (cellCount > 3)) && cell->alive)
+    else if (((cell_count < 2) || (cell_count > 3)) && cell->alive)
     {
         //Any live cell with fewer than two live neighbours dies, as if caused by   under-population.
         //Any live cell with more than three live neighbours dies, as if by     overcrowding.
         msg.message = "die";
         Model_QueueMessage(&msg);
     }
-    else if ((cellCount == 3) && (!cell->alive))
+    else if ((cell_count == 3) && (!cell->alive))
     {
         //Any dead cell with exactly three live neighbours becomes a live cell, as  if by reproduction.
         msg.message = "live";
